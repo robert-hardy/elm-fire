@@ -90,13 +90,36 @@ type alias Model = Array (Array Int)
 
 init : () -> (Model, Cmd Msg)
 init _ =
-  ( grid 20
+  ( gridList
   , Cmd.none
   )
 
 
 lastRow n =
   Array.repeat n 36
+
+
+flatGrid n =
+  let
+    body =
+      Array.repeat ( n * (n-1) ) 0
+
+  in
+  Array.append body (lastRow n)
+
+
+chunks : Int -> List Int -> List (List Int)
+chunks n ls =
+  case ls of
+    [] -> []
+
+    _ ->
+      (List.take n ls) :: ( chunks n (List.drop n ls) )
+
+
+gridList : Array (Array Int)
+gridList =
+  Array.fromList (List.map Array.fromList (chunks 20 (Array.toList (flatGrid 20))))
 
 
 grid: Int -> Array (Array Int)
