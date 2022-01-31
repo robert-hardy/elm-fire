@@ -163,11 +163,11 @@ propagate model =
 
         foo : Array (Array Int)
         foo =
-          Array.push (lastRow 20) updated
+            Array.push (lastRow 20) updated
 
         bar : List (List Int)
         bar =
-          Array.toList (Array.map Array.toList (foo))
+            Array.toList (Array.map Array.toList foo)
     in
     Array.fromList (List.concat bar)
 
@@ -175,6 +175,38 @@ propagate model =
 decayFrom : Array Int -> Array Int
 decayFrom row =
     Array.map (\x -> max 0 (x - 1)) row
+
+
+type alias Index =
+    Int
+
+
+type alias Intensity =
+    Int
+
+
+propagate2 : Array Intensity -> Array Intensity
+propagate2 arr =
+    let
+        indices : List Int
+        indices =
+            List.range 0 (Array.length arr)
+    in
+    Array.fromList (List.map (\i -> consider i arr) indices)
+
+
+consider : Index -> Array Intensity -> Intensity
+consider i arr =
+    let
+        mVal =
+            Array.get i arr
+    in
+    case mVal of
+        Just val ->
+            val
+
+        Nothing ->
+            0
 
 
 
