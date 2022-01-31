@@ -35,6 +35,10 @@ init =
   grid 20
 
 
+lastRow n =
+  Array.repeat n 36
+
+
 grid: Int -> Array (Array Int)
 grid n =
   let
@@ -43,11 +47,8 @@ grid n =
 
     body =
       Array.repeat (n - 1) r
-
-    lastRow =
-      Array.repeat n 36
   in
-  Array.push lastRow body
+  Array.push ( lastRow n ) body
 
 
 -- UPDATE
@@ -61,7 +62,23 @@ update : Msg -> Model -> Model
 update msg model =
   case msg of
     Update ->
-      model
+      propagate model
+
+
+propagate model =
+  let
+    rows =
+      Array.slice 1 20 model
+
+    updated =
+      Array.map decayFrom rows
+  in
+  Array.push ( lastRow 20 ) updated
+
+
+decayFrom: Array Int -> Array Int
+decayFrom row =
+  Array.map (\x -> max 0 (x - 1)) row
 
 
 
@@ -88,7 +105,9 @@ view : Model -> Html Msg
 view model =
   div []
     [ div []
-      [ table [ style "padding" "0px", style "border-collapse" "separate", style "border-spacing" "0px" ]
+      [ table
+        [ style "padding" "0px", style "border-collapse" "separate", style "border-spacing" "0px" ]
         ( tableRows model )
+      , button [ onClick Update ] [ text "+" ]
       ]
     ]
