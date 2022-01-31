@@ -56,8 +56,20 @@ update msg model =
 
 
 -- VIEW
-row =
-  List.indexedMap cell [0, 0, 0]
+data =
+  [ [0, 0, 9]
+  , [0, 0, 0]
+  , [0, 3, 0]
+  , [0, 0, 0]
+  ]
+
+
+tableBody =
+  List.map (\r -> tr [] (row r) ) data
+
+
+row rowData =
+  List.indexedMap cell rowData
 
 
 cell: Int -> Int -> Html Msg
@@ -70,9 +82,6 @@ view model =
   div []
     [ div []
       [ table [ style "padding" "0px", style "border-collapse" "separate", style "border-spacing" "0px" ]
-        [ tr [] row
-        , tr [] row
-        , tr [] row
-        ]
+        tableBody
       ]
     ]
