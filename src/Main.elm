@@ -56,14 +56,6 @@ update msg model =
 
 
 -- VIEW
-data =
-  [ [0, 1, 0, 9]
-  , [0, 1, 0, 0]
-  , [0, 1, 3, 0]
-  , [0, 1, 0, 0]
-  ]
-
-
 grid: Int -> Array (Array Int)
 grid n =
   let
@@ -73,18 +65,22 @@ grid n =
   Array.repeat n r
 
 
-tableRowsNew =
-  Array.toList ( Array.map toHtmlRow (grid 20) )
+tableRows =
+  Array.toList ( Array.indexedMap toHtmlRow (grid 20) )
 
 
-toHtmlRow: Array Int -> Html Msg
-toHtmlRow arr =
-  tr [] (Array.toList (Array.indexedMap cell arr) )
+toHtmlRow: Int -> Array Int -> Html Msg
+toHtmlRow idx_row arr =
+  tr [] (Array.toList (Array.indexedMap (\j -> indexedCell idx_row j ) arr) )
 
 
-cell: Int -> Int -> Html Msg
-cell idx value =
-  td [] [ text (String.fromInt value), div [ class "pixel-index" ] [ text (String.fromInt idx) ] ]
+indexedCell: Int -> Int -> Int -> Html Msg
+indexedCell idx_row idx_col value =
+  let
+    idxString =
+      (String.fromInt idx_row) ++ "," ++ (String.fromInt idx_col)
+  in
+  td [] [ text (String.fromInt value), div [ class "pixel-index" ] [ text idxString ] ]
 
 
 view : Model -> Html Msg
@@ -92,6 +88,6 @@ view model =
   div []
     [ div []
       [ table [ style "padding" "0px", style "border-collapse" "separate", style "border-spacing" "0px" ]
-        tableRowsNew
+        tableRows
       ]
     ]
