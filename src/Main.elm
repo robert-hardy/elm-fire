@@ -90,7 +90,7 @@ type alias Model =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( flatGrid 20
+    ( startingArray 20
     , Cmd.none
     )
 
@@ -100,13 +100,23 @@ lastRow n =
     Array.repeat n 36
 
 
-flatGrid : Int -> Array Int
-flatGrid n =
+startingArray : Int -> Array Int
+startingArray n =
     let
         body =
             Array.repeat (n * (n - 1)) 0
     in
     Array.append body (lastRow n)
+
+
+a2AA : Array Int -> Array (Array Int)
+a2AA arr =
+    Array.fromList (List.map Array.fromList (chunks 20 (Array.toList arr)))
+
+
+a2LL : Array Int -> List (List Int)
+a2LL arr =
+    chunks 20 (Array.toList arr)
 
 
 chunks : Int -> List Int -> List (List Int)
@@ -117,23 +127,6 @@ chunks n ls =
 
         _ ->
             List.take n ls :: chunks n (List.drop n ls)
-
-
-gridList : Array Int -> Array (Array Int)
-gridList arr =
-    Array.fromList (List.map Array.fromList (chunks 20 (Array.toList arr)))
-
-
-grid : Int -> Array (Array Int)
-grid n =
-    let
-        r =
-            Array.repeat n 0
-
-        body =
-            Array.repeat (n - 1) r
-    in
-    Array.push (lastRow n) body
 
 
 
@@ -158,7 +151,7 @@ propagate model =
     let
         chunked : Array (Array Int)
         chunked =
-            gridList model
+            a2AA model
 
         rows : Array (Array Int)
         rows =
@@ -198,16 +191,12 @@ subscriptions model =
 
 
 tableRows model =
-    let
-        chunked =
-            gridList model
-    in
-    Array.toList (Array.indexedMap toHtmlRow chunked)
+    List.indexedMap toHtmlRow (a2LL model)
 
 
-toHtmlRow : Int -> Array Int -> Html Msg
-toHtmlRow idx_row arr =
-    tr [] (Array.toList (Array.indexedMap (\j -> indexedCell idx_row j) arr))
+toHtmlRow : Int -> List Int -> Html Msg
+toHtmlRow idx_row ls =
+    tr [] (List.indexedMap (\j -> indexedCell idx_row j) ls)
 
 
 indexedCell : Int -> Int -> Int -> Html Msg
