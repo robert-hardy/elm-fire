@@ -12,6 +12,7 @@ import Html exposing (Html, button, div, table, tbody, td, tr, text)
 import Html.Attributes exposing (class, style, property)
 import Html.Events exposing (onClick)
 import Json.Encode as Encode
+import List exposing (range)
 
 
 
@@ -55,6 +56,12 @@ update msg model =
 
 
 -- VIEW
+twoCols =
+  List.map cell (range 1 2)
+
+
+cell idx =
+  td [] [ text "b", div [ class "pixel-index" ] [ text (String.fromInt idx) ] ]
 
 
 view : Model -> Html Msg
@@ -62,14 +69,9 @@ view model =
   div []
     [ div []
       [ table [ style "padding" "0px", style "border-collapse" "separate", style "border-spacing" "0px" ]
-        [ tr []
-          [ td [] [ text "a", div [ class "pixel-index" ] [ text "1" ] ]
-          , td [] [ text "b", div [ class "pixel-index" ] [ text "1" ] ]
-          ]
-        , tr []
-          [ td [] [ text "c", div [ class "pixel-index" ] [ text "1" ] ]
-          , td [] [ text "d", div [ class "pixel-index" ] [ text "1" ] ]
-          ]
+        [ tr [] twoCols
+        , tr [] twoCols
+        , tr [] twoCols
         ]
       ]
     ]
