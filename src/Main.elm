@@ -7,12 +7,12 @@ module Main exposing (..)
 --
 
 
+import Array exposing (Array)
 import Browser
 import Html exposing (Html, button, div, table, tbody, td, tr, text)
 import Html.Attributes exposing (class, style, property)
 import Html.Events exposing (onClick)
 import Json.Encode as Encode
-import List exposing (range)
 
 
 
@@ -57,19 +57,29 @@ update msg model =
 
 -- VIEW
 data =
-  [ [0, 0, 9]
-  , [0, 0, 0]
-  , [0, 3, 0]
-  , [0, 0, 0]
+  [ [0, 1, 0, 9]
+  , [0, 1, 0, 0]
+  , [0, 1, 3, 0]
+  , [0, 1, 0, 0]
   ]
 
 
-tableBody =
-  List.map (\r -> tr [] (row r) ) data
+grid: Int -> Array (Array Int)
+grid n =
+  let
+    r =
+      Array.repeat n 0
+  in
+  Array.repeat n r
 
 
-row rowData =
-  List.indexedMap cell rowData
+tableRowsNew =
+  Array.toList ( Array.map toHtmlRow (grid 20) )
+
+
+toHtmlRow: Array Int -> Html Msg
+toHtmlRow arr =
+  tr [] (Array.toList (Array.indexedMap cell arr) )
 
 
 cell: Int -> Int -> Html Msg
@@ -82,6 +92,6 @@ view model =
   div []
     [ div []
       [ table [ style "padding" "0px", style "border-collapse" "separate", style "border-spacing" "0px" ]
-        tableBody
+        tableRowsNew
       ]
     ]
