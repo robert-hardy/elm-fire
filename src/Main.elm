@@ -194,7 +194,7 @@ propagate2 arr =
     let
         indices : List Int
         indices =
-            List.range 0 (Array.length arr)
+            List.range 0 ((Array.length arr) - 1)
     in
     Array.fromList (List.map (\i -> consider i arr) indices)
 
