@@ -27,46 +27,47 @@ main =
 -- MODEL
 
 
-type alias Model = Int
+type alias Model = Array (Array Int)
 
 
 init : Model
 init =
-  0
+  grid 20
 
+
+grid: Int -> Array (Array Int)
+grid n =
+  let
+    r =
+      Array.repeat n 0
+
+    body =
+      Array.repeat (n - 1) r
+
+    lastRow =
+      Array.repeat n 36
+  in
+  Array.push lastRow body
 
 
 -- UPDATE
 
 
 type Msg
-  = Increment
-  | Decrement
+  = Update
 
 
 update : Msg -> Model -> Model
 update msg model =
   case msg of
-    Increment ->
-      model + 1
-
-    Decrement ->
-      model - 1
+    Update ->
+      model
 
 
 
 -- VIEW
-grid: Int -> Array (Array Int)
-grid n =
-  let
-    r =
-      Array.repeat n 0
-  in
-  Array.repeat n r
-
-
-tableRows =
-  Array.toList ( Array.indexedMap toHtmlRow (grid 20) )
+tableRows model =
+  Array.toList ( Array.indexedMap toHtmlRow model )
 
 
 toHtmlRow: Int -> Array Int -> Html Msg
@@ -88,6 +89,6 @@ view model =
   div []
     [ div []
       [ table [ style "padding" "0px", style "border-collapse" "separate", style "border-spacing" "0px" ]
-        tableRows
+        ( tableRows model )
       ]
     ]
