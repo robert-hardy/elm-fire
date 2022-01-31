@@ -13,6 +13,8 @@ import Html exposing (Html, button, div, table, tbody, td, tr, text)
 import Html.Attributes exposing (class, style, property)
 import Html.Events exposing (onClick)
 import Json.Encode as Encode
+import Task
+import Time
 
 
 
@@ -75,7 +77,7 @@ getColor n =
 
 
 main =
-  Browser.sandbox { init = init, update = update, view = view }
+  Browser.element { init = init, update = update, subscriptions = subscriptions, view = view }
 
 
 
@@ -85,9 +87,11 @@ main =
 type alias Model = Array (Array Int)
 
 
-init : Model
-init =
-  grid 20
+init : () -> (Model, Cmd Msg)
+init _ =
+  ( grid 20
+  , Cmd.none
+  )
 
 
 lastRow n =
@@ -110,14 +114,16 @@ grid n =
 
 
 type Msg
-  = Update
+  = Update Time.Posix
 
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    Update ->
-      propagate model
+    Update t ->
+      ( propagate model
+      , Cmd.none
+      )
 
 
 propagate model =
@@ -134,6 +140,14 @@ propagate model =
 decayFrom: Array Int -> Array Int
 decayFrom row =
   Array.map (\x -> max 0 (x - 1)) row
+
+
+
+-- SUBSCRIPTIONS
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+  Time.every 100 Update
 
 
 
@@ -175,6 +189,5 @@ view model =
       [ table
         [ style "padding" "0px", style "border-collapse" "separate", style "border-spacing" "0px" ]
         ( tableRows model )
-      , button [ onClick Update ] [ text "+" ]
       ]
     ]
