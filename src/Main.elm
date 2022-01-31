@@ -56,12 +56,13 @@ update msg model =
 
 
 -- VIEW
-twoCols =
-  List.map cell (range 1 2)
+row =
+  List.indexedMap cell [0, 0, 0]
 
 
-cell idx =
-  td [] [ text "b", div [ class "pixel-index" ] [ text (String.fromInt idx) ] ]
+cell: Int -> Int -> Html Msg
+cell idx value =
+  td [] [ text (String.fromInt value), div [ class "pixel-index" ] [ text (String.fromInt idx) ] ]
 
 
 view : Model -> Html Msg
@@ -69,9 +70,9 @@ view model =
   div []
     [ div []
       [ table [ style "padding" "0px", style "border-collapse" "separate", style "border-spacing" "0px" ]
-        [ tr [] twoCols
-        , tr [] twoCols
-        , tr [] twoCols
+        [ tr [] row
+        , tr [] row
+        , tr [] row
         ]
       ]
     ]
