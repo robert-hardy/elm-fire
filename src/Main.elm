@@ -13,6 +13,7 @@ import Html exposing (Html, button, div, table, tbody, td, tr, text)
 import Html.Attributes exposing (class, style, property)
 import Html.Events exposing (onClick)
 import Json.Encode as Encode
+import List exposing (range)
 import Task
 import Time
 
@@ -110,17 +111,42 @@ grid n =
   Array.push ( lastRow n ) body
 
 
+indices: Int -> List (Int, Int)
+indices n =
+  List.map (\r -> (r * n, r * n + (n-1))) (range 0 (n-1))
+
+
+take: Int -> Array Int -> (Array Int, Array Int)
+take n arr =
+  let
+    head =
+      Array.slice 0 (n-1) arr
+
+    tail =
+      Array.slice n 1000 arr
+  in
+  (head, tail)
+
+
+taker: (Array (Array Int), Array Int) -> (Array (Array Int), Array Int)
+taker (a, b) =
+  let
+    (head, tail) = take 20 b
+  in
+  (Array.push head a, tail)
+
+
 -- UPDATE
 
 
 type Msg
-  = Update Time.Posix
+  = Tick Time.Posix
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    Update t ->
+    Tick t ->
       ( propagate model
       , Cmd.none
       )
@@ -147,7 +173,7 @@ decayFrom row =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Time.every 100 Update
+  Time.every 100 Tick
 
 
 
@@ -158,7 +184,7 @@ tableRows model =
 
 toHtmlRow: Int -> Array Int -> Html Msg
 toHtmlRow idx_row arr =
-  tr [] (Array.toList (Array.indexedMap (\j -> colouredCell idx_row j ) arr) )
+  tr [] (Array.toList (Array.indexedMap (\j -> indexedCell idx_row j ) arr) )
 
 
 indexedCell: Int -> Int -> Int -> Html Msg
