@@ -13,6 +13,7 @@ import Html.Attributes exposing (class, property, style)
 import Html.Events exposing (onClick)
 import Json.Encode as Encode
 import List exposing (range)
+import Random
 import Task
 import Time
 
@@ -90,7 +91,7 @@ type alias Model =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( startingArray 20
+    ( startingArray 40
     , Cmd.none
     )
 
@@ -111,12 +112,12 @@ startingArray n =
 
 a2AA : Array Int -> Array (Array Int)
 a2AA arr =
-    Array.fromList (List.map Array.fromList (chunks 20 (Array.toList arr)))
+    Array.fromList (List.map Array.fromList (chunks 40 (Array.toList arr)))
 
 
 a2LL : Array Int -> List (List Int)
 a2LL arr =
-    chunks 20 (Array.toList arr)
+    chunks 40 (Array.toList arr)
 
 
 chunks : Int -> List Int -> List (List Int)
@@ -155,7 +156,7 @@ propagate model =
 
         rows : Array (Array Int)
         rows =
-            Array.slice 1 20 chunked
+            Array.slice 1 40 chunked
 
         updated : Array (Array Int)
         updated =
@@ -163,7 +164,7 @@ propagate model =
 
         foo : Array (Array Int)
         foo =
-            Array.push (lastRow 20) updated
+            Array.push (lastRow 40) updated
 
         bar : List (List Int)
         bar =
@@ -194,7 +195,7 @@ propagate2 arr =
     let
         indices : List Int
         indices =
-            List.range 0 ((Array.length arr) - 1)
+            List.range 0 (Array.length arr - 1)
     in
     Array.fromList (List.map (\i -> consider i arr) indices)
 
@@ -203,7 +204,7 @@ consider : Index -> Array Intensity -> Intensity
 consider i arr =
     let
         iNextRow =
-            i + 20
+            i + 40
 
         mVal =
             Array.get iNextRow arr
@@ -216,13 +217,18 @@ consider i arr =
             36
 
 
+probability : Random.Generator Float
+probability =
+    Random.float 0 1
+
+
 
 -- SUBSCRIPTIONS
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Time.every 100 Tick
+    Time.every 50 Tick
 
 
 
@@ -256,7 +262,7 @@ colouredCell idx_row idx_col value =
         rgbString =
             "rgb(" ++ String.fromInt rgbData.r ++ "," ++ String.fromInt rgbData.g ++ "," ++ String.fromInt rgbData.b ++ ")"
     in
-    td [ style "background-color" rgbString ] []
+    td [ class "pixel", style "background-color" rgbString ] []
 
 
 view : Model -> Html Msg
