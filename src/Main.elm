@@ -141,7 +141,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Tick t ->
-            ( propagate model
+            ( propagate2 model
             , Cmd.none
             )
 
@@ -185,6 +185,10 @@ type alias Intensity =
     Int
 
 
+
+-- All I need to do is create a different indices
+
+
 propagate2 : Array Intensity -> Array Intensity
 propagate2 arr =
     let
@@ -198,15 +202,18 @@ propagate2 arr =
 consider : Index -> Array Intensity -> Intensity
 consider i arr =
     let
+        iNextRow =
+            i + 20
+
         mVal =
-            Array.get i arr
+            Array.get iNextRow arr
     in
     case mVal of
         Just val ->
-            val
+            max 0 (val - 1)
 
         Nothing ->
-            0
+            36
 
 
 
@@ -228,7 +235,7 @@ tableRows model =
 
 toHtmlRow : Int -> List Int -> Html Msg
 toHtmlRow idx_row ls =
-    tr [] (List.indexedMap (\j -> indexedCell idx_row j) ls)
+    tr [] (List.indexedMap (\j -> colouredCell idx_row j) ls)
 
 
 indexedCell : Int -> Int -> Int -> Html Msg
