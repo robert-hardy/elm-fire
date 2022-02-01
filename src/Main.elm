@@ -214,14 +214,14 @@ consider : Int -> Index -> Array Intensity -> Intensity
 consider r i arr =
     let
         iNextRow =
-            i + 40 + r
+            i + 40
 
         mVal =
             Array.get iNextRow arr
     in
     case mVal of
         Just val ->
-            max 0 (val - 1)
+            max 0 (val - r)
 
         Nothing ->
             36
