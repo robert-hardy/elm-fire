@@ -61,7 +61,7 @@ fireColorsPalette =
 
 
 gridWidth =
-  100
+  50
 
 getColor n =
     let
