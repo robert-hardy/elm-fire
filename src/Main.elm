@@ -13,7 +13,7 @@ import Html.Attributes exposing (class, property, style)
 import Html.Events exposing (onClick)
 import Json.Encode as Encode
 import List exposing (range)
-import Random
+import Random exposing (Generator)
 import Task
 import Time
 
@@ -89,10 +89,20 @@ type alias Model =
     Array Int
 
 
+type Msg
+    = Tick Time.Posix
+    | RandomListMsg (List Int)
+
+
+intList : Generator (List Int)
+intList =
+    Random.list (40*40) (Random.int 0 3)
+
+
 init : () -> ( Model, Cmd Msg )
 init _ =
     ( startingArray 40
-    , Cmd.none
+    , Random.generate RandomListMsg intList
     )
 
 
@@ -134,15 +144,19 @@ chunks n ls =
 -- UPDATE
 
 
-type Msg
-    = Tick Time.Posix
-
-
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Tick t ->
             ( propagate2 model
+            , Cmd.none
+            )
+        RandomListMsg ls ->
+            let
+              dummy =
+                Debug.log "Samples" ls
+            in
+            ( model
             , Cmd.none
             )
 
