@@ -148,15 +148,11 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Tick t ->
-            ( propagate2 model
-            , Cmd.none
+            ( model
+            , Random.generate RandomListMsg intList
             )
         RandomListMsg ls ->
-            let
-              dummy =
-                Debug.log "Samples" ls
-            in
-            ( model
+            ( propagate2 ls model
             , Cmd.none
             )
 
@@ -204,21 +200,21 @@ type alias Intensity =
 -- All I need to do is create a different indices
 
 
-propagate2 : Array Intensity -> Array Intensity
-propagate2 arr =
+propagate2 : List Int -> Array Intensity -> Array Intensity
+propagate2 rands arr =
     let
-        indices : List Int
+        indices : List Index
         indices =
             List.range 0 (Array.length arr - 1)
     in
-    Array.fromList (List.map (\i -> consider i arr) indices)
+    Array.fromList (List.map2 (\r -> \i -> consider r i arr) rands indices)
 
 
-consider : Index -> Array Intensity -> Intensity
-consider i arr =
+consider : Int -> Index -> Array Intensity -> Intensity
+consider r i arr =
     let
         iNextRow =
-            i + 40
+            i + 40 + r
 
         mVal =
             Array.get iNextRow arr
