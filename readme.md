@@ -7,6 +7,4 @@ Build with:
     elm make src/Main.elm --output app.js
 
 
-To do:
-
-  - Need to use a flat Array, just like Filipe does.
+then just open the `app.html` file in a browser.
