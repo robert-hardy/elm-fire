@@ -61,7 +61,8 @@ fireColorsPalette =
 
 
 gridWidth =
-  50
+    50
+
 
 getColor n =
     let
@@ -123,26 +124,6 @@ startingArray n =
     Array.append body (lastRow n)
 
 
-a2AA : Array Int -> Array (Array Int)
-a2AA arr =
-    Array.fromList (List.map Array.fromList (chunks gridWidth (Array.toList arr)))
-
-
-a2LL : Array Int -> List (List Int)
-a2LL arr =
-    chunks gridWidth (Array.toList arr)
-
-
-chunks : Int -> List Int -> List (List Int)
-chunks n ls =
-    case ls of
-        [] ->
-            []
-
-        _ ->
-            List.take n ls :: chunks n (List.drop n ls)
-
-
 
 -- UPDATE
 
@@ -167,7 +148,6 @@ type alias Index =
 
 type alias Intensity =
     Int
-
 
 
 propagate2 : List Int -> Array Intensity -> Array Intensity
@@ -203,11 +183,26 @@ consider r i arr =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Time.every 40 Tick
+    Time.every 50 Tick
 
 
 
 -- VIEW
+
+
+a2LL : Array Int -> List (List Int)
+a2LL arr =
+    chunks gridWidth (Array.toList arr)
+
+
+chunks : Int -> List Int -> List (List Int)
+chunks n ls =
+    case ls of
+        [] ->
+            []
+
+        _ ->
+            List.take n ls :: chunks n (List.drop n ls)
 
 
 tableRows model =
