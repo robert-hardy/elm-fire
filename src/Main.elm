@@ -60,6 +60,9 @@ fireColorsPalette =
         ]
 
 
+gridWidth =
+  100
+
 getColor n =
     let
         maybeRGB =
@@ -94,15 +97,15 @@ type Msg
     | RandomListMsg (List Int)
 
 
-intList : Generator (List Int)
-intList =
-    Random.list (40*40) (Random.int 0 3)
+samples : Generator (List Int)
+samples =
+    Random.list (gridWidth * gridWidth) (Random.int 0 3)
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( startingArray 40
-    , Random.generate RandomListMsg intList
+    ( startingArray gridWidth
+    , Random.generate RandomListMsg samples
     )
 
 
@@ -122,12 +125,12 @@ startingArray n =
 
 a2AA : Array Int -> Array (Array Int)
 a2AA arr =
-    Array.fromList (List.map Array.fromList (chunks 40 (Array.toList arr)))
+    Array.fromList (List.map Array.fromList (chunks gridWidth (Array.toList arr)))
 
 
 a2LL : Array Int -> List (List Int)
 a2LL arr =
-    chunks 40 (Array.toList arr)
+    chunks gridWidth (Array.toList arr)
 
 
 chunks : Int -> List Int -> List (List Int)
@@ -149,43 +152,13 @@ update msg model =
     case msg of
         Tick t ->
             ( model
-            , Random.generate RandomListMsg intList
+            , Random.generate RandomListMsg samples
             )
+
         RandomListMsg ls ->
             ( propagate2 ls model
             , Cmd.none
             )
-
-
-propagate : Array Int -> Array Int
-propagate model =
-    let
-        chunked : Array (Array Int)
-        chunked =
-            a2AA model
-
-        rows : Array (Array Int)
-        rows =
-            Array.slice 1 40 chunked
-
-        updated : Array (Array Int)
-        updated =
-            Array.map decayFrom rows
-
-        foo : Array (Array Int)
-        foo =
-            Array.push (lastRow 40) updated
-
-        bar : List (List Int)
-        bar =
-            Array.toList (Array.map Array.toList foo)
-    in
-    Array.fromList (List.concat bar)
-
-
-decayFrom : Array Int -> Array Int
-decayFrom row =
-    Array.map (\x -> max 0 (x - 1)) row
 
 
 type alias Index =
@@ -195,9 +168,6 @@ type alias Index =
 type alias Intensity =
     Int
 
-
-
--- All I need to do is create a different indices
 
 
 propagate2 : List Int -> Array Intensity -> Array Intensity
@@ -214,7 +184,7 @@ consider : Int -> Index -> Array Intensity -> Intensity
 consider r i arr =
     let
         iNextRow =
-            i + 40
+            i + gridWidth
 
         mVal =
             Array.get iNextRow arr
@@ -227,18 +197,13 @@ consider r i arr =
             36
 
 
-probability : Random.Generator Float
-probability =
-    Random.float 0 1
-
-
 
 -- SUBSCRIPTIONS
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Time.every 50 Tick
+    Time.every 40 Tick
 
 
 
